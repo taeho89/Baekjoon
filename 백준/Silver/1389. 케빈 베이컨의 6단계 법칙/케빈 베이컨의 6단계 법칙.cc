@@ -1,57 +1,48 @@
-#include <algorithm>
-#include <climits>
 #include <iostream>
-
-#define INF 1e9
+#include <queue>
+#include <vector>
 
 using namespace std;
 
 int N, M;
-int v[101][101];
+vector<int> adj[101];
 
-void print() {
-  for (int i = 1; i <= N; i++) {
-    for (int j = 1; j <= N; j++) {
-      if (v[i][j] == INF) {
-        cout << "INF" << ' ';
-      } else {
-        cout << v[i][j] << "   ";
+int bfs(int start) {
+  queue<int> q;
+  vector<int> dist(N + 1, -1);
+  int bacon = 0;
+
+  q.push(start);
+  dist[start] = 0;
+
+  while (!q.empty()) {
+    int cur = q.front();
+    q.pop();
+
+    for (int neighbor : adj[cur]) {
+      if (dist[neighbor] == -1) {
+        dist[neighbor] = dist[cur] + 1;
+        q.push(neighbor);
+        bacon += dist[neighbor];
       }
     }
-    cout << '\n';
   }
+  return bacon;
 }
 
 int solve() {
-  int min_num = INF;
-  int min = INF;
-
-  // 기준 노드
-  for (int k = 1; k <= N; k++) {
-    // 출발지 노드
-    for (int i = 1; i <= N; i++) {
-      // 도착지 노드
-      for (int j = 1; j <= N; j++) {
-        v[i][j] = std::min(v[i][j], v[i][k] + v[k][j]);
-      }
-    }
-  }
+  int min = 1e9;
+  int answer = 0;
 
   for (int i = 1; i <= N; i++) {
-    v[i][0] = 0;
-    for (int j = 1; j <= N; j++) {
-      v[i][0] += v[i][j];
+    int res = bfs(i);
+
+    if (res < min) {
+      min = res;
+      answer = i;
     }
   }
-
-  for (int i = 1; i <= N; i++) {
-    if (v[i][0] < min) {
-      min = v[i][0];
-      min_num = i;
-    }
-  }
-
-  return min_num;
+  return answer;
 }
 
 int main(void) {
@@ -59,22 +50,11 @@ int main(void) {
   ios_base::sync_with_stdio(false);
 
   cin >> N >> M;
-
-  for (int i = 1; i <= N; i++) {
-    for (int j = 1; j <= N; j++) {
-      if (i == j) {
-        v[i][j] = 0;
-      } else {
-        v[i][j] = INF;
-      }
-    }
-  }
-
   for (int i = 0; i < M; i++) {
     int a, b;
     cin >> a >> b;
-    v[a][b] = 1;
-    v[b][a] = 1;
+    adj[a].push_back(b);
+    adj[b].push_back(a);
   }
 
   cout << solve() << '\n';
