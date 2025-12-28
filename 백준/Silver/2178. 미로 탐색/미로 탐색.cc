@@ -2,47 +2,51 @@
 #include <queue>
 #include <string>
 
+#define MAX 101
+
 using namespace std;
 
 int N, M;
+int map[MAX][MAX];
+int dist[MAX][MAX];
 
-int map[101][101];
-int visited[101][101];
-int dist[101][101];
-
-int pos[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+int dy[4] = {0, 0, 1, -1};
+int dx[4] = {1, -1, 0, 0};
 
 int solve() {
-  queue<pair<int, int>> q;
-  pair<int, int> cur;
+  for (int i = 0; i < MAX; i++) {
+    for (int j = 0; j < MAX; j++) {
+      dist[i][j] = -1;
+    }
+  }
 
+  queue<pair<int, int>> q;
   q.push({1, 1});
-  visited[1][1] = 1;
   dist[1][1] = 1;
 
   while (!q.empty()) {
-    cur = q.front();
+    pair<int, int> cur = q.front();
     q.pop();
 
     int y = cur.first;
     int x = cur.second;
 
-    if (y == N && x == M) {
-      break;
-    }
-    for (int i = 0; i < 4; i++) {
-      int next_y = y + pos[i][0];
-      int next_x = x + pos[i][1];
+    if (y == N && x == M)
+      return dist[y][x];
 
-      if (next_y >= 1 && next_x >= 1 && map[next_y][next_x] &&
-          !visited[next_y][next_x]) {
-        dist[next_y][next_x] = dist[y][x] + 1;
-        visited[next_y][next_x] = 1;
-        q.push({next_y, next_x});
+    for (int i = 0; i < 4; i++) {
+      int ny = y + dy[i];
+      int nx = x + dx[i];
+
+      if (ny > 0 && ny <= N && nx > 0 && nx <= M) {
+        if (map[ny][nx] == 1 && dist[ny][nx] == -1) {
+          dist[ny][nx] = dist[y][x] + 1;
+          q.push({ny, nx});
+        }
       }
     }
   }
-  return dist[cur.first][cur.second];
+  return -1;
 }
 
 int main(void) {
@@ -55,7 +59,7 @@ int main(void) {
 
     cin >> line;
     for (int j = 1; j <= M; j++) {
-      map[i][j] = line[j - 1] - 48;
+      map[i][j] = line[j - 1] - '0';
     }
   }
 
