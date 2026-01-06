@@ -15,6 +15,9 @@ template <typename T> struct compare {
 };
 
 int main(void) {
+  cin.tie(nullptr);
+  ios_base::sync_with_stdio(false);
+
   priority_queue<int, vector<int>, compare<int>> pq;
 
   cin >> N;
